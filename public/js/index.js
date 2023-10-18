@@ -16,7 +16,6 @@ const bookBtn = document.getElementById('book-tour');
 // DELEGATION
 if (mapBox) {
   const locations = JSON.parse(mapBox.dataset.locations);
-  // console.log(locations);
   displayMap(locations);
 }
 
