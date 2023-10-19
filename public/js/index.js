@@ -12,6 +12,7 @@ const logOutBtn = document.querySelector('.nav__el--logout');
 const userDataForm = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-password');
 const bookBtn = document.getElementById('book-tour');
+const updatePhotoBtn = document.querySelector('.form__upload');
 
 // DELEGATION
 if (mapBox) {
@@ -49,9 +50,17 @@ if (userDataForm)
     form.append('name', document.getElementById('name').value);
     form.append('email', document.getElementById('email').value);
     form.append('photo', document.getElementById('photo').files[0]);
+    console.log(updatePhotoBtn);
 
     updateSettings(form, 'data');
   });
+
+if (updatePhotoBtn) {
+  updatePhotoBtn.addEventListener('change', (e) => {
+    document.querySelector('.photo__upload').textContent =
+      'Press save settings';
+  });
+}
 
 if (userPasswordForm)
   userPasswordForm.addEventListener('submit', async (e) => {
