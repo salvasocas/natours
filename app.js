@@ -99,8 +99,7 @@ app.all('*', (req, res, next) => {
   // const err = new Error(`Cant find ${req.originalUrl}`);
   // err.status = 'fail';
   // err.statusCode = 404;
-
-  next(new AppError(`Cant find ${req.originalUrl}`, 404));
+  // next(new AppError(`Cant find ${req.originalUrl}`, 404));
 });
 
 app.use(globalErrorHandler);
