@@ -23,6 +23,7 @@ const app = express();
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
+app.set('trust proxy', true);
 
 // MIDDLEWARES
 // Implement CORS
