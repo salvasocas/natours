@@ -7,6 +7,19 @@ dotenv.config({ path: './config.env' });
 let cachedConn = null;
 let cachedPromise = null;
 
+const classifyDbError = (err) => {
+  const msg = (err && err.message) || '';
+
+  if (msg.includes('DATABASE env var is required')) return 'missing_database_env';
+  if (msg.includes('DATABASE_PASSWORD env var is required')) return 'missing_database_password_env';
+  if (msg.includes('querySrv ENOTFOUND') || msg.includes('ENOTFOUND')) return 'atlas_host_not_found';
+  if (msg.includes('Authentication failed')) return 'atlas_auth_failed';
+  if (msg.includes('IP') || msg.includes('whitelist')) return 'atlas_ip_not_whitelisted';
+  if (msg.includes('Server selection timed out')) return 'atlas_server_selection_timeout';
+
+  return 'db_connection_error';
+};
+
 const getDbUri = () => {
   if (!process.env.DATABASE) {
     throw new Error('DATABASE env var is required');
@@ -30,7 +43,11 @@ const connectDb = async () => {
 
   if (!cachedPromise) {
     const dbUri = getDbUri();
-    cachedPromise = mongoose.connect(dbUri).then((m) => m.connection);
+    cachedPromise = mongoose
+      .connect(dbUri, {
+        serverSelectionTimeoutMS: 10000,
+      })
+      .then((m) => m.connection);
   }
 
   cachedConn = await cachedPromise;
@@ -42,9 +59,16 @@ module.exports = async (req, res) => {
     await connectDb();
     return app(req, res);
   } catch (err) {
+    const errorCode = classifyDbError(err);
     console.error('DB connection error:', err.message);
     res.statusCode = 500;
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({ status: 'error', message: 'Database connection failed' }));
+    res.end(
+      JSON.stringify({
+        status: 'error',
+        message: 'Database connection failed',
+        errorCode,
+      })
+    );
   }
 };
