@@ -14,9 +14,17 @@ const encodedDbPassword = process.env.DATABASE_PASSWORD
   ? encodeURIComponent(process.env.DATABASE_PASSWORD)
   : '';
 
-const DB = process.env.DATABASE
+if (!process.env.DATABASE) {
+  throw new Error('DATABASE env var is required');
+}
+
+if (process.env.DATABASE.includes('<PASSWORD>') && !process.env.DATABASE_PASSWORD) {
+  throw new Error('DATABASE_PASSWORD env var is required when DATABASE contains <PASSWORD>');
+}
+
+const DB = process.env.DATABASE.includes('<PASSWORD>')
   ? process.env.DATABASE.replace('<PASSWORD>', encodedDbPassword)
-  : process.env.DATABASE_LOCAL || 'mongodb://127.0.0.1:27017/natours';
+  : process.env.DATABASE;
 
 mongoose
   .connect(DB)
