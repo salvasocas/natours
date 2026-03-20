@@ -2,8 +2,37 @@ extends base
 include _reviewCard
 
 block append head
-  script(src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js')
-  link(href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet')
+  link(href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css' rel='stylesheet' integrity='sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=' crossorigin='')
+  script(src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js' integrity='sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=' crossorigin='')
+  script.
+    // Keep legacy bundle from crashing on pages where mapboxgl is no longer loaded.
+    window.mapboxgl = window.mapboxgl || {
+      accessToken: '',
+      Map: function() {
+        return {
+          fitBounds: function() {}
+        };
+      },
+      LngLatBounds: function() {
+        return {
+          extend: function() {}
+        };
+      },
+      Marker: function() {
+        return {
+          setLngLat: function() { return this; },
+          addTo: function() { return this; }
+        };
+      },
+      Popup: function() {
+        return {
+          setLngLat: function() { return this; },
+          setHTML: function() { return this; },
+          addTo: function() { return this; }
+        };
+      }
+    };
+  script(src='/js/leaflet-map.js' defer)
 
   
 mixin overviewBox(label, text, icon)
