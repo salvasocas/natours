@@ -10,14 +10,18 @@ process.on('uncaughtException', (err) => {
 dotenv.config({ path: './config.env' });
 const app = require('./app');
 
-const DB = process.env.DATABASE.replace(
-  '<PASSWORD>',
-  process.env.DATABASE_PASSWORD
-);
+const encodedDbPassword = process.env.DATABASE_PASSWORD
+  ? encodeURIComponent(process.env.DATABASE_PASSWORD)
+  : '';
+
+const DB = process.env.DATABASE
+  ? process.env.DATABASE.replace('<PASSWORD>', encodedDbPassword)
+  : process.env.DATABASE_LOCAL || 'mongodb://127.0.0.1:27017/natours';
 
 mongoose
   .connect(DB, {
     useNewUrlParser: true,
+    useUnifiedTopology: true,
     useCreateIndex: true,
     useFindAndModify: false,
   })
