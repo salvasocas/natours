@@ -19,14 +19,13 @@ const DB = process.env.DATABASE
   : process.env.DATABASE_LOCAL || 'mongodb://127.0.0.1:27017/natours';
 
 mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-  })
+  .connect(DB)
   .then(() => {
     console.log('DB connection succesfull');
+  })
+  .catch((err) => {
+    console.log('DB CONNECTION ERROR:');
+    console.log(err.message);
   });
 
 const port = process.env.PORT || 3000;
