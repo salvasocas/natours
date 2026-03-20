@@ -32,7 +32,30 @@ module.exports = class Email {
     }
   }
 
+  isEmailConfigured() {
+    if (process.env.NODE_ENV === 'production') {
+      return Boolean(
+        process.env.SENDINBLUE_HOST &&
+          process.env.SENDINBLUE_PORT &&
+          process.env.SENDINBLUE_USERNAME &&
+          process.env.SENDINBLUE_SMTPKEY
+      );
+    }
+
+    return Boolean(
+      process.env.EMAIL_HOST &&
+        process.env.EMAIL_PORT &&
+        process.env.EMAIL_USERNAME &&
+        process.env.EMAIL_PASSWORD
+    );
+  }
+
   async send(template, subject) {
+    if (!this.isEmailConfigured()) {
+      console.warn('Email not sent: SMTP credentials are not configured.');
+      return;
+    }
+
     // Render HTML based on a bug template
     const html = pug.renderFile(`${__dirname}/../views/email/${template}.pug`, {
       firstName: this.firstName,

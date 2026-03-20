@@ -41,8 +41,12 @@ exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create(req.body);
 
   const url = `${req.protocol}://${req.get('host')}/me`;
-  // console.log(url);
-  await new Email(newUser, url).sendWelcome();
+  // Email should not block signup success when SMTP is not configured.
+  try {
+    await new Email(newUser, url).sendWelcome();
+  } catch (err) {
+    console.warn('Welcome email skipped:', err.message);
+  }
 
   createSendToken(newUser, 201, res);
 });

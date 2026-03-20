@@ -1,12 +1,10 @@
 import '@babel/polyfill';
-import { displayMap } from './mapbox';
 import { login, logout, signup } from './login';
 import { updateSettings } from './updateSettings';
 import { bookTour } from './stripe';
 import { showAlert } from './alerts';
 
 // DOM ELEMENTS
-const mapBox = document.getElementById('map');
 const signupForm = document.querySelector('.form--signup');
 const loginForm = document.querySelector('.form--login');
 const logOutBtn = document.querySelector('.nav__el--logout');
@@ -16,11 +14,6 @@ const bookBtn = document.getElementById('book-tour');
 const updatePhotoBtn = document.querySelector('.form__upload');
 
 // DELEGATION
-if (mapBox) {
-  const locations = JSON.parse(mapBox.dataset.locations);
-  displayMap(locations);
-}
-
 if (signupForm) {
   signupForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -28,7 +21,8 @@ if (signupForm) {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const passwordConfirm = document.getElementById('passwordConfirm').value;
-    e.target.lastChild.lastChild.textContent = 'Procesing...';
+    const submitBtn = e.target.querySelector('button[type="submit"], button');
+    if (submitBtn) submitBtn.textContent = 'Processing...';
 
     signup(name, email, password, passwordConfirm);
   });
