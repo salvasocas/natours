@@ -7,6 +7,8 @@ const factory = require('./handlerFactory');
 
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.tourId);
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+  const host = req.headers['x-forwarded-host'] || req.get('host');
 
   const session = await stripe.checkout.sessions.create({
     //session info
@@ -20,11 +22,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
           product_data: {
             name: `${tour.name} Tour`,
             description: tour.summary,
-            images: [
-              `${req.protocol}://${req.get('host')}/img/tours/${
-                tour.imageCover
-              }`,
-            ],
+            images: [`${protocol}://${host}/img/tours/${tour.imageCover}`],
           },
         },
         quantity: 1,
@@ -34,8 +32,8 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     // success_url: `${req.protocol}://${req.get('host')}/?tour=${
     //   req.params.tourId
     // }&user=${req.user.id}&price=${tour.price}`,
-    success_url: `${req.protocol}://${req.get('host')}/my-tours?alert=booking`,
-    cancel_url: `${req.protocol}://${req.get('host')}/tour/${tour.slug}`,
+    success_url: `${protocol}://${host}/my-tours?alert=booking`,
+    cancel_url: `${protocol}://${host}/tour/${tour.slug}`,
     customer_email: req.user.email,
     client_reference_id: req.params.tourId,
   });

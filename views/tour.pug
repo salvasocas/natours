@@ -4,6 +4,7 @@ include _reviewCard
 block append head
   link(href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css' rel='stylesheet' integrity='sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=' crossorigin='')
   script(src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js' integrity='sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=' crossorigin='')
+  script(src='/js/booking-fallback.js' defer)
   script.
     // Keep legacy bundle from crashing on pages where mapboxgl is no longer loaded.
     window.mapboxgl = window.mapboxgl || {
@@ -116,6 +117,6 @@ block content
         p.cta__text= `${tour.duration} days. 1 adventure. Infinite memories. Make it yours today!`
 
         if user
-          button.btn.btn--green.span-all-rows#book-tour(data-tour-id=`${tour.id}`) Book tour now!
+          button.btn.btn--green.span-all-rows#book-tour(data-tour-id=`${tour.id}` data-stripe-public-key=`${stripePublicKey}`) Book tour now!
         else
           a.btn.btn--green.span-all-rows(href='/login') Login to book tour
